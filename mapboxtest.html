@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Red Dragon Test</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.40.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.40.0/mapbox-gl.js'></script>
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+  </head>
+  <body>
+
+    <style>
+      #map {
+        position: fixed;
+        width:50%;
+      }
+      #features {
+        width: 50%;
+        margin-left: 50%;
+        font-family: sans-serif;
+        overflow-y: scroll;
+        background-color: #fafafa;
+      }
+      section {
+        height: 100vh;
+        padding:  25px 50px;
+        line-height: 25px;
+        border-bottom: 1px solid #ddd;
+        opacity: 0.25;
+        font-size: 13px;
+      }
+      section.active {
+        opacity: 1;
+      }
+      section:last-child {
+        border-bottom: none;
+        margin-bottom: 200px;
+      }
+    </style>
+
+    <div id='map'></div>
+    <div id='features'>
+        <section id='england' class='active'>
+            <h3>ENGLAND</h3>
+            <p>Where they started.</p>
+        </section>
+        <section id='sierra-leone'>
+            <h3>SIERRA LEONE</h3>
+            <p>Then they went here at some point.</p>
+        </section>
+        <section id='salvador'>
+            <h3>SALVADOR</h3>
+            <p>After that they went here I think.</p>
+        </section>
+
+        <script>
+          mapboxgl.accessToken = 'pk.eyJ1IjoiYXhvbmFsdCIsImEiOiJjajh1bXU0ajcxMjY2MzNwOGJvaHN0bDBjIn0.oUvMV9_vKdrLQExQnzMTXQ';
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v9',
+            bearing: 0,
+            center: [-0.14955, 51.4775],
+            zoom: 5,
+            pitch: 20
+        });
+
+        var chapters = {
+            'england': {
+                bearing: 0,
+                center: [-0.14955, 51.4775],
+                zoom: 5,
+                pitch: 20
+            },
+            'sierra-leone': {
+                duration: 6000,
+                center: [-13.0289, 8.3308],
+                bearing: -30,
+                zoom: 8,
+                pitch: 45
+            },
+            'salvador': {
+                bearing: 30,
+                center: [-38.365938, -12.802113],
+                zoom: 8,
+                speed: 0.6,
+                pitch: 40
+            }
+        };
+
+        // On every scroll event, check which element is on screen
+        window.onscroll = function() {
+            var chapterNames = Object.keys(chapters);
+            for (var i = 0; i < chapterNames.length; i++) {
+                var chapterName = chapterNames[i];
+                if (isElementOnScreen(chapterName)) {
+                    setActiveChapter(chapterName);
+                    break;
+                }
+            }
+        };
+
+        var activeChapterName = 'england';
+        function setActiveChapter(chapterName) {
+            if (chapterName === activeChapterName) return;
+
+            map.flyTo(chapters[chapterName]);
+
+            document.getElementById(chapterName).setAttribute('class', 'active');
+            document.getElementById(activeChapterName).setAttribute('class', '');
+
+            activeChapterName = chapterName;
+        }
+
+        function isElementOnScreen(id) {
+            var element = document.getElementById(id);
+            var bounds = element.getBoundingClientRect();
+            return bounds.top < window.innerHeight && bounds.bottom > 0;
+        }
+
+      </script>
+    </div>
+  </body>
+</html>
