@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Demo 2</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+button {
+    position: absolute;
+    margin: 20px;
+}
+
+</style>
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYXhvbmFsdCIsImEiOiJjajh1bXU0ajcxMjY2MzNwOGJvaHN0bDBjIn0.oUvMV9_vKdrLQExQnzMTXQ';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/axonalt/cjczcjckx0h9x2sqwwjab2iiy',
+    center: [-11.190506, 44.339565],
+    zoom: 3.5
+});
+
+var frame = 0;
+
+// Create a GeoJSON source with an empty lineString.
+var gravesendToFuerteventuraGeojson = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": []
+        }
+    }]
+};
+
+var gravesendToFuerteventuraTrip =
+                [[0.372266, 51.445877],
+                [1.187725, 51.481383],
+                [1.694298, 51.358062],
+                [1.826134, 51.193115],
+                [1.584435, 50.986099],
+                [0.978985, 50.701677],
+                [0.683556, 50.639010],
+                [-0.195351, 50.457504],
+                [-1.623573, 50.317408],
+                [-2.919960, 50.007739],
+                [-3.645058, 49.738682],
+                [-4.897499, 49.439557],
+                [-5.615387, 48.574790],
+                [-6.018105, 48.048710],
+                [-6.611366, 47.724545],
+                [-7.028847, 46.845164],
+                [-7.806717, 46.437857],
+                [-8.303261, 45.644768],
+                [-10.190506, 44.339565],
+                [-10.619293, 44.150681],
+                [-10.893631, 43.452919],
+                [-11.464920, 42.358544],
+                [-11.937576, 41.244772],
+                [-12.119293, 40.580585],
+                [-11.813358, 39.232253],
+                [-11.596756, 37.961523],
+                [-11.201248, 37.370157],
+                [-10.800934, 36.102376],
+                [-10.498123, 34.994004],
+                [-10.519217, 34.307144],
+                [-10.517850, 33.063924],
+                [-10.800934, 31.952162],
+                [-11.049843, 30.467614],
+                [-11.508865, 29.878755],
+                [-12.324257, 29.306174],
+                [-13.866186, 28.484082]];
+
+
+
+// Gravesend: [0.372266, 51.445877]
+// Fuerteventura: [-13.866186, 28.484082]
+// Rio de Oro: [-15.973703, 23.505441]
+// Sierra Leone: [-13.186, 8.504]
+// Rio De La Plata: []
+// Salvador: []
+// Cape Verde: []
+// Southhampton: []
+
+map.on('load', function() {
+
+    // add the line which will be modified in the animation
+    map.addLayer({
+        'id': 'gravesendToFuerteventuraId',
+        'type': 'line',
+        'source': {
+            'type': 'geojson',
+            'data': gravesendToFuerteventuraGeojson
+        },
+        'layout': {
+            'line-cap': 'round',
+            'line-join': 'round',
+        },
+        'paint': {
+            'line-color': '#9A0000',
+            'line-width': 5,
+            'line-opacity': 0.9,
+            'line-dasharray': [1, 2],
+            'line-blur': 1
+        }
+    });
+
+    gravesendToFuerteventura();
+
+    function gravesendToFuerteventura() {
+      if (frame <= gravesendToFuerteventuraTrip.length - 1) {
+        setTimeout(function() {
+          gravesendToFuerteventuraGeojson.features[0].geometry.coordinates.push(gravesendToFuerteventuraTrip[frame]);
+          map.getSource('gravesendToFuerteventuraId').setData(gravesendToFuerteventuraGeojson);
+          frame++;
+          animation = requestAnimationFrame(gravesendToFuerteventura);
+        }, 80);
+      }
+    }
+});
+</script>
+
+</body>
+</html>
+
+<!-- // animated in a circle as a sine wave along the map.
+// function animateLine(timestamp) {
+//     if (resetTime) {
+//         // resume previous progress
+//         startTime = performance.now() - progress;
+//         resetTime = false;
+//     } else {
+//         progress = timestamp - startTime;
+//     }
+//
+//     // restart if it finishes a loop
+//     if (progress > speedFactor * 360) {
+//         startTime = timestamp;
+//         geojson.features[0].geometry.coordinates = [];
+//     } else {
+//         var x = progress / speedFactor;
+//         // draw a sine wave with some math.
+//         var y = Math.sin(x * Math.PI / 90) * 40;
+//         // append new coordinates to the lineString
+//         geojson.features[0].geometry.coordinates.push([x, y]);
+//         // then update the map
+//         map.getSource('line-animation').setData(geojson);
+//     }
+//     // Request the next frame of the animation.
+//     animation = requestAnimationFrame(animateLine);
+// } -->
